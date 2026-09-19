@@ -602,11 +602,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          set -x
+          set -ex
 
           # This is required for nodejs to run - not gg.cmd!
-          if [ "${{ matrix.container }}" == "alpine" ]; then
+          if [ "${{ matrix.container }}" = "alpine" ]; then
             apk add libstdc++
+          fi
+
+          # https://github.com/seanmonstar/reqwest/issues/2965
+          if [ "${{ matrix.container }}" = "ubuntu" ] || [ "${{ matrix.container }}" = "debian" ]; then
+            apt-get update && apt-get install -y ca-certificates
           fi
 
           sh gg.cmd -v ${{ matrix.cmd }}
